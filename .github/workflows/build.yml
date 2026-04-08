@@ -41,3 +41,18 @@ jobs:
         with:
           name: adaptation-violet-${{ github.ref_name }}-${{ steps.vars.outputs.date }}
           path: output/
+          
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: github.event_name == 'push' && github.ref == 'refs/heads/droidian-halium-11'
+        with:
+          tag_name: latest-violet
+          name: Latest Violet Adaptation Build
+          body: |
+            Automated build for Redmi Note 7 Pro (violet).
+            Built on: ${{ steps.vars.outputs.date }}
+          files: output/*.deb
+          # Set to true if you want it marked as "Pre-release"
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
