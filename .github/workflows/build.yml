@@ -30,12 +30,14 @@ jobs:
 
       - name: Build .deb Package
         run: |
-          # -us -uc: unsigned for CI
-          # -b: binary only
           dpkg-buildpackage -us -uc -b
+          # Create a local folder and move the results into it
+          mkdir -p output
+          mv ../*.deb output/
+          mv ../*.changes output/ || true
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: adaptation-violet-${{ github.ref_name }}-${{ steps.vars.outputs.date }}
-          path: ${{ github.workspace }}/../**/*.deb
+          path: output/
