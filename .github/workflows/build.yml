@@ -1,0 +1,42 @@
+name: Build arm64 Debian Package (Native)
+
+on:
+  push:
+    branches: [ 'droidian-halium-11' ] 
+  pull_request:
+    branches: [ 'droidian-halium-11' ]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04-arm
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set build metadata
+        id: vars
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Install Build Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y devscripts equivs build-essential
+
+      - name: Install Dependencies
+        run: |
+          # Automatically satisfies dependencies from debian/control
+          sudo mk-build-deps --install --tool='apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends --yes' debian/control
+
+      - name: Build .deb Package
+        run: |
+          # -us -uc: unsigned for CI
+          # -b: binary only
+          dpkg-buildpackage -us -uc -b
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          # Final Name: adaptation-violet-droidian-halium-11-yyyy-mm-dd
+          name: adaptation-violet-${{ github.ref_name }}-${{ steps.vars.outputs.date }}
+          path: ../*.deb
