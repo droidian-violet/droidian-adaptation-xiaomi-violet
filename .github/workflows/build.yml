@@ -5,7 +5,11 @@ on:
     branches: [ 'droidian-halium-11' ] 
   pull_request:
     branches: [ 'droidian-halium-11' ]
-
+    
+permissions:
+  contents: write
+  packages: write
+  repository-projects: read
 jobs:
   build:
     runs-on: ubuntu-24.04-arm
